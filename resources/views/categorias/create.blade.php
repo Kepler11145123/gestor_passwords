@@ -6,7 +6,7 @@
     <div class="page-header">
         <h1 class="page-title">Crear Nueva Bóveda de Contraseñas</h1>
         <a href="{{ route('categorias.index') }}" class="btn btn-secondary">
-            ← Volver al Listado
+              Volver al Listado
         </a>
     </div>
 
@@ -16,7 +16,13 @@
 
             <div class="form-group">
                 <label for="nombre">Nombre de la Bóveda / Categoría *</label>
-                <input type="text" id="nombre" name="nombre" value="{{ old('nombre') }}" placeholder="Ej: Trabajo, Personal, Finanzas..." required>
+                <input type="text" id="nombre" name="nombre" list="presets-boveda" value="{{ old('nombre') }}" placeholder="Elige una sugerencia o escribe un nombre propio" required>
+                <datalist id="presets-boveda">
+                    @foreach(['Trabajo', 'Personal', 'Finanzas', 'Redes sociales', 'Correo electrónico', 'Compras', 'Entretenimiento', 'Desarrollo'] as $preset)
+                        <option value="{{ $preset }}">
+                    @endforeach
+                </datalist>
+                <small class="text-muted">Puedes elegir una sugerencia o escribir un nombre personalizado. Después selecciona esta bóveda al crear tus credenciales.</small>
                 @error('nombre')
                     <div class="form-error">{{ $message }}</div>
                 @enderror

@@ -121,7 +121,7 @@
             <tr>
                 <td>
                     <h1>Informe de Seguridad</h1>
-                    <p>BóvedaSegura — Gestor de Contraseñas</p>
+                    <p>SecureVault — Gestor de Contraseñas</p>
                 </td>
                 <td style="text-align:right; vertical-align:top;">
                     <span class="badge">Generado: {{ $fecha }}</span>
@@ -137,12 +137,8 @@
                 <span class="value">{{ $totalCategorias }}</span>
             </td>
             <td>
-                <span class="label">Credenciales Cifradas</span>
+                <span class="label">Credenciales guardadas</span>
                 <span class="value">{{ $totalCredenciales }}</span>
-            </td>
-            <td>
-                <span class="label">Cifrado en Reposo</span>
-                <span class="value" style="font-size:16px; padding-top:6px;">AES-256-CBC</span>
             </td>
         </tr>
     </table>
@@ -197,13 +193,10 @@
         </tbody>
     </table>
 
-    <p class="muted">
-        Nota: este informe no incluye contraseñas ni notas sensibles. Las contraseñas se almacenan cifradas
-        mediante AES-256-CBC y solo se descifran al consultar el detalle de cada credencial.
-    </p>
+    <p class="muted">Este informe no incluye contraseñas ni notas sensibles.</p>
 
     <div class="footer">
-        BóvedaSegura © {{ date('Y') }} — Documento generado automáticamente el {{ $fecha }}.
+        SecureVault © {{ date('Y') }} — Documento generado automáticamente el {{ $fecha }}.
     </div>
 </body>
 </html>

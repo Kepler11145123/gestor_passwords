@@ -6,7 +6,7 @@
     <div class="page-header">
         <h1 class="page-title">Editar Bóveda: {{ $categoria->nombre }}</h1>
         <a href="{{ route('categorias.index') }}" class="btn btn-secondary">
-            ← Volver al Listado
+              Volver al Listado
         </a>
     </div>
 

@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('titulo', 'Gestor de Contraseñas') | Bóveda Segura</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <title>@yield('titulo', 'Panel') | SecureVault</title>
     
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -266,36 +267,67 @@
             color: var(--text-muted);
             font-size: 0.85rem;
         }
+
+        :root { --bg-color:#f4f6fb; --card-bg:#fff; --primary:#5b5ce2; --primary-hover:#4748c8; --text-main:#171a32; --text-muted:#737891; --border-color:#e7e9f2; --radius:16px; }
+        body { background:radial-gradient(ellipse at 15% 0%, #edf0ff 0, transparent 36%), var(--bg-color); }
+        header { background:rgba(255,255,255,.92); color:var(--text-main); padding:.75rem 2rem; border-bottom:1px solid var(--border-color); box-shadow:0 8px 30px rgba(22,26,58,.04); backdrop-filter:blur(16px); position:sticky; top:0; z-index:50; }
+        nav { max-width:1440px; }
+        .securevault-brand { display:inline-flex; align-items:center; gap:.65rem; color:var(--text-main); text-decoration:none; font-size:1.22rem; font-weight:800; letter-spacing:-.045em; white-space:nowrap; }
+        .securevault-brand .securevault-mark { width:38px; height:38px; flex:none; }
+        .securevault-word > span { color:#5b5ce2; }
+        .nav-links { gap:.35rem; }
+        .nav-links a { display:inline-flex; align-items:center; gap:.5rem; color:#666c87; padding:.62rem .82rem; border-radius:11px; font-size:.88rem; font-weight:650; }
+        .nav-links a:hover,.nav-links a.active { color:#4e50cd; background:#f0f0ff; }
+        .ui-icon { width:19px; height:19px; flex:none; }
+        .user-menu-trigger { border:1px solid var(--border-color)!important; border-radius:999px!important; padding:.25rem .6rem .25rem .28rem!important; color:var(--text-main)!important; }
+        .user-dropdown { background:#fff!important; border:1px solid var(--border-color); box-shadow:0 18px 50px rgba(22,26,58,.15)!important; }
+        .user-dropdown a,.user-dropdown button { color:#3a3e59!important; }
+        main { max-width:1380px; padding:0 2rem; margin:2.25rem auto; }
+        .page-title { color:#191d3b; font-size:clamp(1.5rem,2vw,2rem); letter-spacing:-.04em; }
+        .page-header { margin-bottom:1.8rem; }
+        .card { border-color:rgba(221,224,239,.9); border-radius:18px; box-shadow:0 10px 35px rgba(30,35,80,.055); padding:1.55rem; }
+        .btn { border-radius:11px; font-weight:650; padding:.65rem 1rem; }
+        .btn-primary { background:linear-gradient(135deg,#6668ed,#4f50d5); box-shadow:0 7px 17px rgba(85,86,219,.2); }
+        .btn-primary:hover { background:linear-gradient(135deg,#5557dc,#4142bf); transform:translateY(-1px); }
+        .btn-secondary { background:#f6f7fc; color:#414663; border-color:#e6e8f2; }
+        .badge { background:#eeeeff; color:#5052cb; border-radius:8px; padding:.35rem .6rem; }
+        input[type="email"],input[type="file"],input[type="number"],input[type="date"] { width:100%; padding:.65rem .85rem; border:1px solid var(--border-color); border-radius:var(--radius); background:#fff; color:var(--text-main); }
+        table { border-spacing:0; }
+        th { background:#f7f8fc; color:#747993; }
+        tbody tr:hover { background:#f8f8ff; }
+        .nav-profile { display:flex;align-items:center;gap:.65rem; }
+        .nav-profile img { width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #ececff; }
+        .dropdown-link { display:flex!important;align-items:center;gap:.65rem; }
+        .user-dropdown a:hover,.user-dropdown button:hover { background:#f1f2ff; }
+        @media(max-width:1050px) { header{padding:.75rem 1rem}.nav-links{order:3;width:100%;overflow-x:auto}.nav-links a{white-space:nowrap} }
+        @media(max-width:640px) { main{padding:0 1rem;margin:1.25rem auto}.page-header{align-items:flex-start}.card{padding:1.1rem}.nav-profile img{width:34px;height:34px} }
     </style>
 </head>
 <body>
     <header>
         <nav>
-            <a href="{{ route('dashboard.index') }}" class="nav-brand">
-                🛡️ Gestor de Contraseñas
-            </a>
+            <x-brand-logo :href="route('dashboard.index')" />
             <div class="nav-links">
-                <a href="{{ route('dashboard.index') }}">Dashboard</a>
-                <a href="{{ route('categorias.index') }}">Bóvedas</a>
-                <a href="{{ route('credenciales.index') }}">Credenciales</a>
-                <a href="{{ route('hibp.index') }}">🔍 Verificar Filtración</a>
-                <a href="{{ route('informe.pdf') }}" target="_blank">📄 PDF</a>
+                <a class="{{ request()->routeIs('dashboard.*') ? 'active' : '' }}" href="{{ route('dashboard.index') }}"><x-icon name="dashboard"/>Inicio</a>
+                <a class="{{ request()->routeIs('categorias.*', 'credenciales.*') ? 'active' : '' }}" href="{{ route('categorias.index') }}"><x-icon name="vault"/>Bóvedas</a>
+                <a class="{{ request()->routeIs('hibp.*') ? 'active' : '' }}" href="{{ route('hibp.index') }}"><x-icon name="scan"/>Filtraciones</a>
+                <a class="{{ request()->routeIs('informe.pdf') ? 'active' : '' }}" href="{{ route('informe.pdf') }}"><x-icon name="file"/>Informe</a>
             </div>
             <!-- Menú usuario activo -->
-            <div style="position: relative; display: flex; align-items: center; gap: 0.75rem;">
-                <img src="{{ auth()->user()->avatarUrl() }}" alt="Avatar" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border: 2px solid rgba(255,255,255,0.3);">
+            <div class="nav-profile" style="position: relative;">
+                <a href="{{ route('perfil.edit') }}" aria-label="Cambiar foto de perfil"><img src="{{ auth()->user()->avatarUrl() }}" alt="Foto de perfil"></a>
                 <div style="position: relative;">
-                    <button onclick="toggleUserMenu()" style="background:transparent; border:none; color:#d1d5db; cursor:pointer; font-size: 0.9rem; display:flex; align-items:center; gap:0.35rem;">
-                        {{ auth()->user()->name }} <span>▾</span>
+                    <button class="user-menu-trigger" onclick="toggleUserMenu()" style="background:transparent; border:none; cursor:pointer; font-size: 0.9rem; display:flex; align-items:center; gap:0.35rem;">
+                        {{ auth()->user()->name }}
                     </button>
-                    <div id="userMenu" style="display:none; position:absolute; right:0; top:calc(100% + 0.5rem); background:#1f2937; border-radius:8px; min-width:180px; overflow:hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index:100;">
-                        <a href="{{ route('perfil.edit') }}" style="display:block; padding:0.7rem 1rem; color:#d1d5db; text-decoration:none; font-size:0.9rem; transition:background 0.15s;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">
-                            👤 Editar Perfil
+                    <div id="userMenu" class="user-dropdown" style="display:none; position:absolute; right:0; top:calc(100% + 0.5rem); border-radius:12px; min-width:190px; overflow:hidden; z-index:100;">
+                        <a href="{{ route('perfil.edit') }}" class="dropdown-link" style="display:block; padding:0.7rem 1rem; text-decoration:none; font-size:0.9rem; transition:background 0.15s;">
+                            <x-icon name="user"/>Mi perfil
                         </a>
                         <form action="{{ route('logout') }}" method="POST" style="margin:0;">
                             @csrf
-                            <button type="submit" style="width:100%; text-align:left; padding:0.7rem 1rem; color:#f87171; background:transparent; border:none; cursor:pointer; font-size:0.9rem; border-top: 1px solid #374151;" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">
-                                🚪 Cerrar Sesión
+                            <button type="submit" class="dropdown-link" style="width:100%; text-align:left; padding:0.7rem 1rem; background:transparent; border:none; cursor:pointer; font-size:0.9rem; border-top: 1px solid var(--border-color);">
+                                <x-icon name="logout"/>Cerrar sesión
                             </button>
                         </form>
                     </div>

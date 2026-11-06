@@ -9,9 +9,9 @@
             <p class="text-muted">{{ $categoria->descripcion ?? 'Sin descripción adicional' }}</p>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-            <a href="{{ route('credenciales.create') }}" class="btn btn-primary">+ Nueva Credencial</a>
+            <a href="{{ route('credenciales.create', ['categoria_id' => $categoria->id]) }}" class="btn btn-primary">Nueva Credencial</a>
             <a href="{{ route('categorias.edit', $categoria->id) }}" class="btn btn-secondary">Editar Bóveda</a>
-            <a href="{{ route('categorias.index') }}" class="btn btn-secondary">← Volver</a>
+            <a href="{{ route('categorias.index') }}" class="btn btn-secondary">  Volver</a>
         </div>
     </div>
 
@@ -25,26 +25,14 @@
                     <tr>
                         <th>Identificador</th>
                         <th>Título / Servicio</th>
-                        <th>Usuario / Email</th>
-                        <th>URL</th>
                         <th style="text-align: right;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($categoria->credenciales as $credencial)
+                    @forelse($credenciales as $credencial)
                         <tr>
                             <td><code>{{ $credencial->id_credencial }}</code></td>
                             <td><strong>{{ $credencial->titulo }}</strong></td>
-                            <td>{{ $credencial->usuario }}</td>
-                            <td>
-                                @if($credencial->url)
-                                    <a href="{{ $credencial->url }}" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">
-                                        Visitar enlace ↗
-                                    </a>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
                             <td style="text-align: right; white-space: nowrap;">
                                 <a href="{{ route('credenciales.show', $credencial->id_credencial) }}" class="btn btn-secondary btn-sm">Ver</a>
                                 <a href="{{ route('credenciales.edit', $credencial->id_credencial) }}" class="btn btn-secondary btn-sm">Editar</a>
@@ -57,7 +45,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem;" class="text-muted">
+                            <td colspan="3" style="text-align: center; padding: 2rem;" class="text-muted">
                                 No existen contraseñas guardadas en esta bóveda todavía.
                             </td>
                         </tr>

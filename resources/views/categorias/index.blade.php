@@ -26,7 +26,6 @@
             <table id="tablaCategorias">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Nombre de la Bóveda</th>
                         <th>Descripción</th>
                         <th>Total Credenciales</th>
@@ -37,9 +36,10 @@
                 <tbody>
                     @forelse($categorias as $categoria)
                         <tr>
-                            <td>#{{ $categoria->id }}</td>
                             <td>
-                                <strong>{{ $categoria->nombre }}</strong>
+                                <a href="{{ route('categorias.show', $categoria->id) }}" style="font-weight:700; color:inherit; text-decoration:underline; text-underline-offset:3px">
+                                    {{ $categoria->nombre }}
+                                </a>
                             </td>
                             <td>{{ $categoria->descripcion ?? 'Sin descripción' }}</td>
                             <td>
@@ -58,7 +58,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem;" class="text-muted">
+                            <td colspan="5" style="text-align: center; padding: 2rem;" class="text-muted">
                                 No hay bóvedas registradas actualmente. Presiona "+ Nueva Bóveda" para comenzar.
                             </td>
                         </tr>
@@ -92,7 +92,7 @@
                 }
             },
             pageLength: 10,
-            order: [[1, 'asc']],
+            order: [[0, 'asc']],
             columnDefs: [
                 { targets: -1, orderable: false, searchable: false }
             ]

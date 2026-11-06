@@ -5,12 +5,15 @@
 @section('contenido')
     <div class="page-header">
         <h1 class="page-title">Editar Credencial: {{ $credencial->titulo }}</h1>
-        <a href="{{ route('credenciales.index') }}" class="btn btn-secondary">
-            ← Volver al Listado
+        <a href="{{ route('categorias.show', $credencial->categoria_id) }}" class="btn btn-secondary">
+              Volver a la Bóveda
         </a>
     </div>
 
     <div class="card" style="max-width: 700px; margin: 0 auto;">
+        @if($pinRecoveryPending)
+            @include('credenciales._pin-recovery')
+        @endif
         <form action="{{ route('credenciales.update', $credencial->id_credencial) }}" method="POST">
             @csrf
             @method('PUT')
@@ -58,7 +61,7 @@
             <!-- Nueva Contraseña (Opcional) -->
             <div class="form-group">
                 <label for="password">Nueva Contraseña (Opcional)</label>
-                <input type="password" id="password" name="password" placeholder="•••••••••••• (Dejar en blanco para conservar la actual)">
+                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña•••• (Dejar en blanco para conservar la actual)">
                 <small class="text-muted">Solo escribe aquí si deseas cambiar la contraseña almacenada. El modelo la re-cifrará automáticamente.</small>
                 @error('password')
                     <div class="form-error">{{ $message }}</div>
@@ -85,8 +88,37 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Actualizar Credencial</button>
-                <a href="{{ route('credenciales.index') }}" class="btn btn-secondary">Cancelar</a>
+                <a href="{{ route('categorias.show', $credencial->categoria_id) }}" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
+@endsection
+
+@section('scripts')
+@if(auth()->user()->vault_pin || ! auth()->user()->vault_pin_prompt_dismissed)
+<script>
+(() => {
+    const csrf = document.querySelector('meta[name="csrf-token"]').content;
+    const keepAliveUrl = @json(route('credenciales.keep-alive', $credencial->id_credencial));
+    const lockUrl = @json(route('credenciales.lock', $credencial->id_credencial));
+    const lockedUrl = @json(route('credenciales.show', ['id_credencial' => $credencial->id_credencial, 'intent' => 'edit']));
+    let timer;
+    let lastTouch = 0;
+    const lock = async () => {
+        await fetch(lockUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, credentials: 'same-origin' });
+        window.location.href = lockedUrl;
+    };
+    const activity = () => {
+        clearTimeout(timer);
+        timer = setTimeout(lock, 20000);
+        if (Date.now() - lastTouch > 10000) {
+            lastTouch = Date.now();
+            fetch(keepAliveUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' }, credentials: 'same-origin' });
+        }
+    };
+    ['pointerdown', 'keydown', 'touchstart', 'mousemove'].forEach(eventName => document.addEventListener(eventName, activity, { passive: true }));
+    timer = setTimeout(lock, 20000);
+})();
+</script>
+@endif
 @endsection

@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\EstadisticasApiController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('v1')->group(function () {
+Route::middleware(['web', 'auth', 'verified'])->prefix('v1')->group(function () {
     Route::get('/estadisticas', [EstadisticasApiController::class, 'estadisticas']);
     Route::get('/bovedas',      [EstadisticasApiController::class, 'bovedas']);
 });

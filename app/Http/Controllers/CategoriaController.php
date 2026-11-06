@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Categoria;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 
 class CategoriaController extends Controller
 {
@@ -15,7 +17,10 @@ class CategoriaController extends Controller
      */
     public function index(): View
     {
-        $categorias = Categoria::withCount('credenciales')->orderBy('nombre', 'asc')->get();
+        $categorias = auth()->user()->categorias()
+            ->withCount(['credenciales' => fn ($query) => $query->where('credenciales.user_id', auth()->id())])
+            ->orderBy('nombre', 'asc')
+            ->get();
         $estadisticas = Categoria::obtenerEstadisticasParaGrafico();
 
         return view('categorias.index', compact('categorias', 'estadisticas'));
@@ -35,15 +40,31 @@ class CategoriaController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $datosValidados = $request->validate([
-            'nombre'      => 'required|string|max:100|unique:categorias,nombre',
+            'nombre'      => 'required|string|max:100|unique:categorias,nombre,NULL,id,user_id,'.auth()->id(),
             'descripcion' => 'nullable|string|max:500',
         ]);
 
-        Categoria::create($datosValidados);
+        auth()->user()->categorias()->create($datosValidados);
 
         return redirect()
             ->route('categorias.index')
             ->with('success', 'Categoría creada exitosamente.');
+    }
+
+    public function quickStore(Request $request): JsonResponse
+    {
+        $datosValidados = $request->validate([
+            'nombre' => ['required', 'string', 'max:100', Rule::unique('categorias', 'nombre')->where('user_id', auth()->id())],
+            'descripcion' => 'nullable|string|max:500',
+        ]);
+
+        $categoria = auth()->user()->categorias()->create($datosValidados);
+
+        return response()->json([
+            'id' => $categoria->id,
+            'nombre' => $categoria->nombre,
+            'descripcion' => $categoria->descripcion,
+        ], 201);
     }
 
     /**
@@ -51,9 +72,13 @@ class CategoriaController extends Controller
      */
     public function show(string $id): View
     {
-        $categoria = Categoria::with('credenciales')->findOrFail($id);
+        $categoria = auth()->user()->categorias()->findOrFail($id);
+        $credenciales = auth()->user()->credenciales()
+            ->where('categoria_id', $categoria->id)
+            ->latest()
+            ->get();
 
-        return view('categorias.show', compact('categoria'));
+        return view('categorias.show', compact('categoria', 'credenciales'));
     }
 
     /**
@@ -61,7 +86,7 @@ class CategoriaController extends Controller
      */
     public function edit(string $id): View
     {
-        $categoria = Categoria::findOrFail($id);
+        $categoria = auth()->user()->categorias()->findOrFail($id);
 
         return view('categorias.edit', compact('categoria'));
     }
@@ -71,10 +96,10 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id): RedirectResponse
     {
-        $categoria = Categoria::findOrFail($id);
+        $categoria = auth()->user()->categorias()->findOrFail($id);
 
         $datosValidados = $request->validate([
-            'nombre'      => 'required|string|max:100|unique:categorias,nombre,' . $categoria->id,
+            'nombre'      => 'required|string|max:100|unique:categorias,nombre,' . $categoria->id . ',id,user_id,'.auth()->id(),
             'descripcion' => 'nullable|string|max:500',
         ]);
 
@@ -90,7 +115,7 @@ class CategoriaController extends Controller
      */
     public function destroy(string $id): RedirectResponse
     {
-        $categoria = Categoria::findOrFail($id);
+        $categoria = auth()->user()->categorias()->findOrFail($id);
         $categoria->delete();
 
         return redirect()

@@ -5,24 +5,21 @@
 @section('contenido')
     <div class="page-header">
         <div style="display: flex; align-items: center; gap: 1rem;">
-            <img src="{{ auth()->user()->avatarUrl() }}" alt="Avatar" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb;">
+            <a href="{{ route('perfil.edit') }}" aria-label="Cambiar foto de perfil"><img src="{{ auth()->user()->avatarUrl() }}" alt="Foto de perfil" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #e5e7eb;"></a>
             <div>
                 <h1 class="page-title">Bienvenido, {{ auth()->user()->name }}</h1>
                 <p class="text-muted">Resumen estadístico en tiempo real del gestor de contraseñas y bóvedas.</p>
             </div>
         </div>
         <div style="display: flex; gap: 0.5rem;">
-            <a href="{{ route('credenciales.create') }}" class="btn btn-primary">+ Nueva Credencial</a>
-            <a href="{{ route('categorias.create') }}" class="btn btn-secondary">+ Nueva Bóveda</a>
+            <a href="{{ route('credenciales.create') }}" class="btn btn-primary">Nueva Credencial</a>
+            <a href="{{ route('categorias.create') }}" class="btn btn-secondary">Nueva Bóveda</a>
         </div>
     </div>
 
     <!-- Tarjetas de Métricas Estadísticas (KPIs) -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
         <div class="card" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
-            <div style="font-size: 2.2rem; background: #eff6ff; padding: 0.75rem 1rem; border-radius: var(--radius);">
-                📁
-            </div>
             <div>
                 <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Total de Bóvedas</span>
                 <h3 style="font-size: 1.8rem; font-weight: 700; color: #1e3a8a;">{{ $totalCategorias }}</h3>
@@ -30,24 +27,12 @@
         </div>
 
         <div class="card" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
-            <div style="font-size: 2.2rem; background: #f0fdf4; padding: 0.75rem 1rem; border-radius: var(--radius);">
-                🔑
-            </div>
             <div>
-                <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Credenciales Cifradas</span>
+                <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Credenciales guardadas</span>
                 <h3 style="font-size: 1.8rem; font-weight: 700; color: #14532d;">{{ $totalCredenciales }}</h3>
             </div>
         </div>
 
-        <div class="card" style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0;">
-            <div style="font-size: 2.2rem; background: #faf5ff; padding: 0.75rem 1rem; border-radius: var(--radius);">
-                🛡️
-            </div>
-            <div>
-                <span class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; font-weight: 600;">Algoritmo en Reposo</span>
-                <h3 style="font-size: 1.4rem; font-weight: 700; color: #581c87;">AES-256-CBC</h3>
-            </div>
-        </div>
     </div>
 
     <!-- Sección de Gráficos con Chart.js -->
@@ -79,50 +64,24 @@
         </div>
     </div>
 
-    <!-- Tabla de Últimas Credenciales Registradas -->
+    <!-- Acceso a credenciales organizado por bóveda -->
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h2 style="font-size: 1.15rem; font-weight: 600; color: #374151;">
-                Últimas Contraseñas Guardadas
+                Tus bóvedas
             </h2>
-            <a href="{{ route('credenciales.index') }}" class="btn btn-secondary btn-sm">Ver Todas →</a>
+            <a href="{{ route('categorias.index') }}" class="btn btn-secondary btn-sm">Ver bóvedas</a>
         </div>
 
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Identificador</th>
-                        <th>Bóveda</th>
-                        <th>Título / Servicio</th>
-                        <th>Usuario</th>
-                        <th>Fecha</th>
-                        <th style="text-align: right;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($ultimasCredenciales as $item)
-                        <tr>
-                            <td><code>{{ $item->id_credencial }}</code></td>
-                            <td><span class="badge">{{ $item->categoria->nombre ?? 'Sin Bóveda' }}</span></td>
-                            <td><strong>{{ $item->titulo }}</strong></td>
-                            <td>{{ $item->usuario }}</td>
-                            <td>{{ $item->created_at ? $item->created_at->diffForHumans() : 'N/A' }}</td>
-                            <td style="text-align: right;">
-                                <a href="{{ route('credenciales.show', $item->id_credencial) }}" class="btn btn-secondary btn-sm">
-                                    Ver Detalle
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 2rem;" class="text-muted">
-                                Aún no se han registrado contraseñas en el sistema.
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1rem">
+            @forelse($bovedas as $boveda)
+                <a href="{{ route('categorias.show', $boveda->id) }}" class="card" style="margin:0; color:inherit; text-decoration:none">
+                    <strong>{{ $boveda->nombre }}</strong>
+                    <div class="text-muted" style="margin-top:.45rem">{{ $boveda->credenciales_count }} credenciales</div>
+                </a>
+            @empty
+                <p class="text-muted">Aún no tienes bóvedas. Crea una para comenzar a organizar tus credenciales.</p>
+            @endforelse
         </div>
     </div>
 @endsection

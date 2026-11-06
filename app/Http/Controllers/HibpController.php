@@ -17,9 +17,7 @@ class HibpController extends Controller
     }
 
     /**
-     * Consulta la API de HaveIBeenPwned (k-Anonymity model) para verificar
-     * si una contraseña ha sido comprometida sin enviar la contraseña completa.
-     * Solo se envían los primeros 5 caracteres del hash SHA-1.
+     * Consulta la API de HaveIBeenPwned para verificar contraseñas comprometidas.
      */
     public function verificar(Request $request): JsonResponse
     {
@@ -73,8 +71,8 @@ class HibpController extends Controller
             'comprometida' => $comprometida,
             'veces'        => $veces,
             'mensaje'      => $comprometida
-                ? "⚠️ Esta contraseña ha aparecido en {$veces} filtraciones conocidas. ¡Cámbiala de inmediato!"
-                : "✅ Esta contraseña no fue encontrada en ninguna filtración conocida.",
+                ? "Esta contraseña ha aparecido en {$veces} filtraciones conocidas. Cámbiala de inmediato."
+                : 'Esta contraseña no fue encontrada en filtraciones conocidas.',
         ]);
     }
 }

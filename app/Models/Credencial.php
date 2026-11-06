@@ -22,6 +22,7 @@ class Credencial extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'user_id',
         'id_credencial',
         'categoria_id',
         'titulo',
@@ -53,6 +54,11 @@ class Credencial extends Model
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'categoria_id', 'id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**

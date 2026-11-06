@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 
 class Categoria extends Model
@@ -14,6 +15,7 @@ class Categoria extends Model
     protected $table = 'categorias';
 
     protected $fillable = [
+        'user_id',
         'nombre',
         'descripcion',
     ];
@@ -27,6 +29,11 @@ class Categoria extends Model
         return $this->hasMany(Credencial::class, 'categoria_id', 'id');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     /**
      * Tarea 5 - Principio de Responsabilidad Única (SRP):
      * Función en el Modelo que usa constructores de consulta (select, count, groupBy)
@@ -37,7 +44,11 @@ class Categoria extends Model
     {
         return self::select('categorias.nombre')
             ->selectRaw('COUNT(credenciales.id_credencial) as total')
-            ->leftJoin('credenciales', 'categorias.id', '=', 'credenciales.categoria_id')
+            ->leftJoin('credenciales', function ($join) {
+                $join->on('categorias.id', '=', 'credenciales.categoria_id')
+                    ->where('credenciales.user_id', auth()->id());
+            })
+            ->where('categorias.user_id', auth()->id())
             ->groupBy('categorias.id', 'categorias.nombre')
             ->orderBy('categorias.nombre', 'asc')
             ->get();

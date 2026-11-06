@@ -18,8 +18,6 @@
                         <th>Identificador</th>
                         <th>Bóveda (Categoría)</th>
                         <th>Título / Servicio</th>
-                        <th>Usuario / Email</th>
-                        <th>Enlace</th>
                         <th>Fecha de Registro</th>
                         <th style="text-align: right;">Acciones</th>
                     </tr>
@@ -32,16 +30,6 @@
                                 <span class="badge">{{ $credencial->categoria->nombre ?? 'Sin Bóveda' }}</span>
                             </td>
                             <td><strong>{{ $credencial->titulo }}</strong></td>
-                            <td>{{ $credencial->usuario }}</td>
-                            <td>
-                                @if($credencial->url)
-                                    <a href="{{ $credencial->url }}" target="_blank" rel="noopener noreferrer" style="color: var(--primary);">
-                                        Abrir ↗
-                                    </a>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </td>
                             <td>{{ $credencial->created_at ? $credencial->created_at->format('d/m/Y') : 'N/A' }}</td>
                             <td style="text-align: right; white-space: nowrap;">
                                 <a href="{{ route('credenciales.show', $credencial->id_credencial) }}" class="btn btn-secondary btn-sm">Ver</a>
@@ -61,7 +49,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 2rem;" class="text-muted">
+                            <td colspan="5" style="text-align: center; padding: 2rem;" class="text-muted">
                                 No hay credenciales registradas aún. Haz clic en "+ Nueva Credencial" para proteger tu primera contraseña.
                             </td>
                         </tr>

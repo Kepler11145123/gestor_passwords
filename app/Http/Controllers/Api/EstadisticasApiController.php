@@ -18,8 +18,8 @@ class EstadisticasApiController extends Controller
         return response()->json([
             'status' => 'ok',
             'data'   => [
-                'total_bovedas'      => Categoria::count(),
-                'total_credenciales' => Credencial::count(),
+                'total_bovedas'      => auth()->user()->categorias()->count(),
+                'total_credenciales' => auth()->user()->credenciales()->count(),
                 'por_boveda'         => Categoria::obtenerConteoCredencialesPorCategoria(),
             ],
         ]);
@@ -31,7 +31,8 @@ class EstadisticasApiController extends Controller
      */
     public function bovedas(): JsonResponse
     {
-        $bovedas = Categoria::withCount('credenciales')
+        $bovedas = auth()->user()->categorias()
+            ->withCount(['credenciales' => fn ($query) => $query->where('credenciales.user_id', auth()->id())])
             ->orderBy('nombre', 'asc')
             ->get(['id', 'nombre', 'descripcion', 'created_at']);
 
